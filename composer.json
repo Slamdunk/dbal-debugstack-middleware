@@ -1,6 +1,6 @@
 {
     "name": "slam/dbal-debugstack-middleware",
-    "description": "Additional handlers for Whoops",
+    "description": "Doctrine\\DBAL middleware for precise query debugging (DebugStack replacement)",
     "license": "MIT",
     "type": "library",
     "authors": [
