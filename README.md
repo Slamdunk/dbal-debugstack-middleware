@@ -39,29 +39,26 @@ $result = $conn->executeQuery(
     ['active' => ParameterType::BOOLEAN],
 );
 
-var_dump($debugStack->getQueries());
+print_r($debugStack->getQueries());
 
 /*
  * Output:
  *
-    array(1) {
-      [0] =>
-      class Slam\DbalDebugstackMiddleware\Query#437 (4) {
-        public readonly string $sql =>
-        string(7) "SELECT * FROM users WHERE active = :active"
-        public readonly array $params =>
-        array(1) {
-          'active' =>
-          bool(true)
-        }
-        public readonly array $types =>
-        array(1) {
-          'active' =>
-          int(5)
-        }
-        public readonly float $executionMs =>
-        double(72.05312)
-      }
-    }
+    Array
+    (
+        [0] => Slam\DbalDebugstackMiddleware\Query Object
+            (
+                [sql] => SELECT * FROM users WHERE active = :active
+                [params] => Array
+                    (
+                        [active] => true
+                    )
+                [types] => Array
+                    (
+                        [active] => 5
+                    )
+                [executionMs] => 72.05312
+            )
+    )
  */
 ```
