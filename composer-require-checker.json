@@ -1,0 +1,11 @@
+{
+  "symbol-whitelist" : [
+    "null", "true", "false",
+    "static", "self", "parent",
+    "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object",
+    "Doctrine\\Common\\Util\\Debug",
+    "PHPUnit\\Framework\\Test",
+    "posix_isatty",
+    "ROOT_PATH"
+  ]
+}
