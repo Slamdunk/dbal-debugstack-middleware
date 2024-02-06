@@ -37,7 +37,7 @@ final class Connection extends AbstractConnectionMiddleware
         return $result;
     }
 
-    public function exec(string $sql): int
+    public function exec(string $sql): int|string
     {
         $start   = Query::start();
         $result  = parent::exec($sql);
@@ -49,38 +49,32 @@ final class Connection extends AbstractConnectionMiddleware
     }
 
     /** {@inheritDoc} */
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $start   = Query::start();
-        $result  = parent::beginTransaction();
+        parent::beginTransaction();
         $elapsed = Query::end($start);
 
         $this->debugStack->append(new Query('BEGINNING TRANSACTION', [], [], $elapsed));
-
-        return $result;
     }
 
     /** {@inheritDoc} */
-    public function commit()
+    public function commit(): void
     {
         $start   = Query::start();
-        $result  = parent::commit();
+        parent::commit();
         $elapsed = Query::end($start);
 
         $this->debugStack->append(new Query('COMMITTING TRANSACTION', [], [], $elapsed));
-
-        return $result;
     }
 
     /** {@inheritDoc} */
-    public function rollBack()
+    public function rollBack(): void
     {
         $start   = Query::start();
-        $result  = parent::rollBack();
+        parent::rollBack();
         $elapsed = Query::end($start);
 
         $this->debugStack->append(new Query('ROLLING BACK TRANSACTION', [], [], $elapsed));
-
-        return $result;
     }
 }
