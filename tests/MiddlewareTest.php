@@ -48,9 +48,8 @@ final class MiddlewareTest extends TestCase
         $realConnection
             ->expects(self::once())
             ->method('beginTransaction')
-            ->willReturn(true)
         ;
-        self::assertTrue($connection->beginTransaction());
+        $connection->beginTransaction();
 
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
@@ -64,9 +63,8 @@ final class MiddlewareTest extends TestCase
         $realConnection
             ->expects(self::once())
             ->method('commit')
-            ->willReturn(true)
         ;
-        self::assertTrue($connection->commit());
+        $connection->commit();
 
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
@@ -80,9 +78,8 @@ final class MiddlewareTest extends TestCase
         $realConnection
             ->expects(self::once())
             ->method('rollBack')
-            ->willReturn(true)
         ;
-        self::assertTrue($connection->rollBack());
+        $connection->rollBack();
 
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
@@ -142,10 +139,6 @@ final class MiddlewareTest extends TestCase
             (new ReflectionProperty(AbstractStatementMiddleware::class, 'wrappedStatement'))->getValue($statement)
         );
 
-        $param1 = \uniqid('param1_');
-        $var1   = \uniqid('var1_');
-        $type1  = ParameterType::STRING;
-        $statement->bindParam($param1, $var1, $type1);
         $param2 = \uniqid('param2_');
         $var2   = \uniqid('var2_');
         $type2  = ParameterType::BOOLEAN;
@@ -164,11 +157,9 @@ final class MiddlewareTest extends TestCase
         self::assertArrayHasKey($currentQueryIndex, $queries);
         self::assertSame($sql, $queries[$currentQueryIndex]->sql);
         self::assertSame([
-            $param1 => $var1,
             $param2 => $var2,
         ], $queries[$currentQueryIndex]->params);
         self::assertSame([
-            $param1 => $type1,
             $param2 => $type2,
         ], $queries[$currentQueryIndex]->types);
         self::assertGreaterThan(0, $queries[$currentQueryIndex]->executionMs);
