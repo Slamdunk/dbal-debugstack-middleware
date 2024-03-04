@@ -1,5 +1,5 @@
-CSFIX_PHP_BIN=PHP_CS_FIXER_IGNORE_ENV=1 php8.3
-PHP_BIN=php8.3 -d zend.assertions=1
+CSFIX_PHP_BIN=PHP_CS_FIXER_IGNORE_ENV=1 php
+PHP_BIN=php -d zend.assertions=1
 COMPOSER_BIN=$(shell command -v composer)
 
 all: csfix static-analysis test
