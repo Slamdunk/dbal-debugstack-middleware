@@ -23,7 +23,8 @@ final class MiddlewareTest extends TestCase
 
         $driver = $middleware->wrap($realDriver);
 
-        self::assertSame([], $stack->getQueries());
+        $queries1 = $stack->getQueries();
+        self::assertSame([], $queries1);
 
         $params         = ['foo' => \uniqid('bar')];
         $realConnection = $this->createMock(Driver\Connection::class);
@@ -39,7 +40,6 @@ final class MiddlewareTest extends TestCase
         $queries           = $stack->getQueries();
         $currentQueryIndex = 0;
         self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertArrayHasKey($currentQueryIndex, $queries);
         self::assertSame('CONNECT', $queries[$currentQueryIndex]->sql);
         self::assertSame($params, $queries[$currentQueryIndex]->params);
         self::assertSame([], $queries[$currentQueryIndex]->types);
@@ -54,7 +54,6 @@ final class MiddlewareTest extends TestCase
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
         self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertArrayHasKey($currentQueryIndex, $queries);
         self::assertSame('BEGINNING TRANSACTION', $queries[$currentQueryIndex]->sql);
         self::assertSame([], $queries[$currentQueryIndex]->params);
         self::assertSame([], $queries[$currentQueryIndex]->types);
@@ -69,7 +68,6 @@ final class MiddlewareTest extends TestCase
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
         self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertArrayHasKey($currentQueryIndex, $queries);
         self::assertSame('COMMITTING TRANSACTION', $queries[$currentQueryIndex]->sql);
         self::assertSame([], $queries[$currentQueryIndex]->params);
         self::assertSame([], $queries[$currentQueryIndex]->types);
@@ -84,7 +82,6 @@ final class MiddlewareTest extends TestCase
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
         self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertArrayHasKey($currentQueryIndex, $queries);
         self::assertSame('ROLLING BACK TRANSACTION', $queries[$currentQueryIndex]->sql);
         self::assertSame([], $queries[$currentQueryIndex]->params);
         self::assertSame([], $queries[$currentQueryIndex]->types);
@@ -102,7 +99,6 @@ final class MiddlewareTest extends TestCase
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
         self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertArrayHasKey($currentQueryIndex, $queries);
         self::assertSame($sql, $queries[$currentQueryIndex]->sql);
         self::assertSame([], $queries[$currentQueryIndex]->params);
         self::assertSame([], $queries[$currentQueryIndex]->types);
@@ -120,7 +116,6 @@ final class MiddlewareTest extends TestCase
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
         self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertArrayHasKey($currentQueryIndex, $queries);
         self::assertSame($sql, $queries[$currentQueryIndex]->sql);
         self::assertSame([], $queries[$currentQueryIndex]->params);
         self::assertSame([], $queries[$currentQueryIndex]->types);
@@ -154,7 +149,6 @@ final class MiddlewareTest extends TestCase
         $queries = $stack->getQueries();
         ++$currentQueryIndex;
         self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertArrayHasKey($currentQueryIndex, $queries);
         self::assertSame($sql, $queries[$currentQueryIndex]->sql);
         self::assertSame([
             $param2 => $var2,
