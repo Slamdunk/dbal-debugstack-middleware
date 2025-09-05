@@ -14,9 +14,23 @@ final class DebugStack
         $this->queries[] = $query;
     }
 
-    /** @return list<Query> */
+    /**
+     * @return list<Query>
+     *
+     * @deprecated Consider using {@see self::popQueries()} instead
+     */
     public function getQueries(): array
     {
         return $this->queries;
+    }
+
+    /** @return list<Query> */
+    public function popQueries(): array
+    {
+        $queries = $this->queries;
+
+        $this->queries = [];
+
+        return $queries;
     }
 }

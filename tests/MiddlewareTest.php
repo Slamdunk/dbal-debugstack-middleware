@@ -23,8 +23,8 @@ final class MiddlewareTest extends TestCase
 
         $driver = $middleware->wrap($realDriver);
 
-        $queries1 = $stack->getQueries();
-        self::assertSame([], $queries1);
+        $queries = $stack->popQueries();
+        self::assertSame([], $queries);
 
         $params         = ['foo' => \uniqid('bar')];
         $realConnection = $this->createMock(Driver\Connection::class);
@@ -37,13 +37,15 @@ final class MiddlewareTest extends TestCase
 
         $connection = $driver->connect($params);
 
-        $queries           = $stack->getQueries();
-        $currentQueryIndex = 0;
-        self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertSame('CONNECT', $queries[$currentQueryIndex]->sql);
-        self::assertSame($params, $queries[$currentQueryIndex]->params);
-        self::assertSame([], $queries[$currentQueryIndex]->types);
-        self::assertGreaterThan(0, $queries[$currentQueryIndex]->executionMs);
+        $getQueries = $stack->getQueries();
+        $queries    = $stack->popQueries();
+        self::assertCount(1, $queries);
+        self::assertSame('CONNECT', $queries[0]->sql);
+        self::assertSame($params, $queries[0]->params);
+        self::assertSame([], $queries[0]->types);
+        self::assertGreaterThan(0, $queries[0]->executionMs);
+
+        self::assertSame($queries, $getQueries);
 
         $realConnection
             ->expects(self::once())
@@ -51,13 +53,12 @@ final class MiddlewareTest extends TestCase
         ;
         $connection->beginTransaction();
 
-        $queries = $stack->getQueries();
-        ++$currentQueryIndex;
-        self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertSame('BEGINNING TRANSACTION', $queries[$currentQueryIndex]->sql);
-        self::assertSame([], $queries[$currentQueryIndex]->params);
-        self::assertSame([], $queries[$currentQueryIndex]->types);
-        self::assertGreaterThan(0, $queries[$currentQueryIndex]->executionMs);
+        $queries = $stack->popQueries();
+        self::assertCount(1, $queries);
+        self::assertSame('BEGINNING TRANSACTION', $queries[0]->sql);
+        self::assertSame([], $queries[0]->params);
+        self::assertSame([], $queries[0]->types);
+        self::assertGreaterThan(0, $queries[0]->executionMs);
 
         $realConnection
             ->expects(self::once())
@@ -65,13 +66,12 @@ final class MiddlewareTest extends TestCase
         ;
         $connection->commit();
 
-        $queries = $stack->getQueries();
-        ++$currentQueryIndex;
-        self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertSame('COMMITTING TRANSACTION', $queries[$currentQueryIndex]->sql);
-        self::assertSame([], $queries[$currentQueryIndex]->params);
-        self::assertSame([], $queries[$currentQueryIndex]->types);
-        self::assertGreaterThan(0, $queries[$currentQueryIndex]->executionMs);
+        $queries = $stack->popQueries();
+        self::assertCount(1, $queries);
+        self::assertSame('COMMITTING TRANSACTION', $queries[0]->sql);
+        self::assertSame([], $queries[0]->params);
+        self::assertSame([], $queries[0]->types);
+        self::assertGreaterThan(0, $queries[0]->executionMs);
 
         $realConnection
             ->expects(self::once())
@@ -79,13 +79,12 @@ final class MiddlewareTest extends TestCase
         ;
         $connection->rollBack();
 
-        $queries = $stack->getQueries();
-        ++$currentQueryIndex;
-        self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertSame('ROLLING BACK TRANSACTION', $queries[$currentQueryIndex]->sql);
-        self::assertSame([], $queries[$currentQueryIndex]->params);
-        self::assertSame([], $queries[$currentQueryIndex]->types);
-        self::assertGreaterThan(0, $queries[$currentQueryIndex]->executionMs);
+        $queries = $stack->popQueries();
+        self::assertCount(1, $queries);
+        self::assertSame('ROLLING BACK TRANSACTION', $queries[0]->sql);
+        self::assertSame([], $queries[0]->params);
+        self::assertSame([], $queries[0]->types);
+        self::assertGreaterThan(0, $queries[0]->executionMs);
 
         $sql = \uniqid('query_');
         $realConnection
@@ -96,13 +95,12 @@ final class MiddlewareTest extends TestCase
         ;
         self::assertSame($realResult, $connection->query($sql));
 
-        $queries = $stack->getQueries();
-        ++$currentQueryIndex;
-        self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertSame($sql, $queries[$currentQueryIndex]->sql);
-        self::assertSame([], $queries[$currentQueryIndex]->params);
-        self::assertSame([], $queries[$currentQueryIndex]->types);
-        self::assertGreaterThan(0, $queries[$currentQueryIndex]->executionMs);
+        $queries = $stack->popQueries();
+        self::assertCount(1, $queries);
+        self::assertSame($sql, $queries[0]->sql);
+        self::assertSame([], $queries[0]->params);
+        self::assertSame([], $queries[0]->types);
+        self::assertGreaterThan(0, $queries[0]->executionMs);
 
         $sql = \uniqid('exec_');
         $realConnection
@@ -113,13 +111,12 @@ final class MiddlewareTest extends TestCase
         ;
         self::assertSame($realResult, $connection->exec($sql));
 
-        $queries = $stack->getQueries();
-        ++$currentQueryIndex;
-        self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertSame($sql, $queries[$currentQueryIndex]->sql);
-        self::assertSame([], $queries[$currentQueryIndex]->params);
-        self::assertSame([], $queries[$currentQueryIndex]->types);
-        self::assertGreaterThan(0, $queries[$currentQueryIndex]->executionMs);
+        $queries = $stack->popQueries();
+        self::assertCount(1, $queries);
+        self::assertSame($sql, $queries[0]->sql);
+        self::assertSame([], $queries[0]->params);
+        self::assertSame([], $queries[0]->types);
+        self::assertGreaterThan(0, $queries[0]->executionMs);
 
         $sql = \uniqid('prepare_');
         $realConnection
@@ -146,16 +143,15 @@ final class MiddlewareTest extends TestCase
         ;
         self::assertSame($realResult, $statement->execute());
 
-        $queries = $stack->getQueries();
-        ++$currentQueryIndex;
-        self::assertCount(1 + $currentQueryIndex, $queries);
-        self::assertSame($sql, $queries[$currentQueryIndex]->sql);
+        $queries = $stack->popQueries();
+        self::assertCount(1, $queries);
+        self::assertSame($sql, $queries[0]->sql);
         self::assertSame([
             $param2 => $var2,
-        ], $queries[$currentQueryIndex]->params);
+        ], $queries[0]->params);
         self::assertSame([
             $param2 => $type2,
-        ], $queries[$currentQueryIndex]->types);
-        self::assertGreaterThan(0, $queries[$currentQueryIndex]->executionMs);
+        ], $queries[0]->types);
+        self::assertGreaterThan(0, $queries[0]->executionMs);
     }
 }

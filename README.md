@@ -39,7 +39,7 @@ $result = $conn->executeQuery(
     ['active' => ParameterType::BOOLEAN],
 );
 
-print_r($debugStack->getQueries());
+print_r($debugStack->popQueries());
 
 /*
  * Output:
