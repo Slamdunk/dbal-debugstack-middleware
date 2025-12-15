@@ -29,7 +29,7 @@ final class MiddlewareTest extends TestCase
         $params         = ['foo' => \uniqid('bar')];
         $realConnection = $this->createMock(Driver\Connection::class);
         $realDriver
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('connect')
             ->with(self::identicalTo($params))
             ->willReturn($realConnection)
@@ -48,7 +48,7 @@ final class MiddlewareTest extends TestCase
         self::assertSame($queries, $getQueries);
 
         $realConnection
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('beginTransaction')
         ;
         $connection->beginTransaction();
@@ -61,7 +61,7 @@ final class MiddlewareTest extends TestCase
         self::assertGreaterThan(0, $queries[0]->executionMs);
 
         $realConnection
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('commit')
         ;
         $connection->commit();
@@ -74,7 +74,7 @@ final class MiddlewareTest extends TestCase
         self::assertGreaterThan(0, $queries[0]->executionMs);
 
         $realConnection
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('rollBack')
         ;
         $connection->rollBack();
@@ -88,7 +88,7 @@ final class MiddlewareTest extends TestCase
 
         $sql = \uniqid('query_');
         $realConnection
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('query')
             ->with(self::identicalTo($sql))
             ->willReturn($realResult = $this->createMock(Driver\Result::class))
@@ -104,7 +104,7 @@ final class MiddlewareTest extends TestCase
 
         $sql = \uniqid('exec_');
         $realConnection
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('exec')
             ->with(self::identicalTo($sql))
             ->willReturn($realResult = \mt_rand(100, 199))
@@ -120,7 +120,7 @@ final class MiddlewareTest extends TestCase
 
         $sql = \uniqid('prepare_');
         $realConnection
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('prepare')
             ->with(self::identicalTo($sql))
             ->willReturn($realStatement = $this->createMock(Driver\Statement::class))
@@ -137,7 +137,7 @@ final class MiddlewareTest extends TestCase
         $statement->bindValue($param2, $var2, $type2);
 
         $realStatement
-            ->expects(self::once())
+            ->expects($this->once())
             ->method('execute')
             ->willReturn($realResult = $this->createMock(Driver\Result::class))
         ;
