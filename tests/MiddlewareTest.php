@@ -107,7 +107,7 @@ final class MiddlewareTest extends TestCase
             ->expects($this->once())
             ->method('exec')
             ->with(self::identicalTo($sql))
-            ->willReturn($realResult = \mt_rand(100, 199))
+            ->willReturn($realResult = \random_int(100, 199))
         ;
         self::assertSame($realResult, $connection->exec($sql));
 
