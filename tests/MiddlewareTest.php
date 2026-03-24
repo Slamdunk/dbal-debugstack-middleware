@@ -91,7 +91,7 @@ final class MiddlewareTest extends TestCase
             ->expects($this->once())
             ->method('query')
             ->with(self::identicalTo($sql))
-            ->willReturn($realResult = $this->createMock(Driver\Result::class))
+            ->willReturn($realResult = self::createStub(Driver\Result::class))
         ;
         self::assertSame($realResult, $connection->query($sql));
 
@@ -128,7 +128,7 @@ final class MiddlewareTest extends TestCase
         $statement = $connection->prepare($sql);
         self::assertSame(
             $realStatement,
-            (new ReflectionProperty(AbstractStatementMiddleware::class, 'wrappedStatement'))->getValue($statement)
+            new ReflectionProperty(AbstractStatementMiddleware::class, 'wrappedStatement')->getValue($statement)
         );
 
         $param2 = \uniqid('param2_');
@@ -139,7 +139,7 @@ final class MiddlewareTest extends TestCase
         $realStatement
             ->expects($this->once())
             ->method('execute')
-            ->willReturn($realResult = $this->createMock(Driver\Result::class))
+            ->willReturn($realResult = self::createStub(Driver\Result::class))
         ;
         self::assertSame($realResult, $statement->execute());
 
